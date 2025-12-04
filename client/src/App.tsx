@@ -28,13 +28,32 @@ function App() {
 
   return (
     <div className="App">
+      <div className="cross-background"></div>
       <header className="App-header">
-        <h1>Redeemer Recovery</h1>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <p>{message}</p>
-        )}
+        <div className="logo-container">
+          <div className="cross-icon">✝</div>
+          <h1>Redeemer Recovery</h1>
+          <p className="subtitle">A Journey of Healing and Hope</p>
+        </div>
+
+        <div className="scripture-verse">
+          <p className="verse-text">"He heals the brokenhearted and binds up their wounds."</p>
+          <p className="verse-reference">- Psalm 147:3</p>
+        </div>
+
+        <div className="content-section">
+          {loading ? (
+            <p className="loading-text">Loading...</p>
+          ) : (
+            <div className="message-box">
+              <p>{message}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="footer-section">
+          <p className="footer-text">Walking in faith, one step at a time</p>
+        </div>
       </header>
     </div>
   )

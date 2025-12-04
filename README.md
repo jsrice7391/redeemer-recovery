@@ -65,6 +65,55 @@ npm run build:client
 npm start
 ```
 
+## Deployment
+
+### Docker Compose
+
+Run the full stack (PostgreSQL + Server + Prisma Studio) with Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+Services:
+- PostgreSQL: `localhost:5432`
+- Server: `localhost:3001`
+- Prisma Studio: `localhost:5555` (run with `docker-compose --profile studio up`)
+
+Stop services:
+
+```bash
+docker-compose down
+```
+
+### Kubernetes
+
+Deploy to a Kubernetes cluster:
+
+```bash
+cd k8s
+./deploy.sh
+```
+
+Or manually:
+
+```bash
+kubectl apply -f k8s/
+```
+
+See [k8s/README.md](k8s/README.md) for detailed deployment instructions, including:
+- Building and pushing Docker images
+- Configuring secrets and ingress
+- Scaling and monitoring
+- Database management
+
+Clean up Kubernetes resources:
+
+```bash
+cd k8s
+./cleanup.sh
+```
+
 ## Tech Stack
 
 ### Backend
