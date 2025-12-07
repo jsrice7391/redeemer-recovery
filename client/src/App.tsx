@@ -1,62 +1,78 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import LoginButton from './LoginButton';
+import Dashboard from './Dashboard';
+import ProtectedRoute from './ProtectedRoute';
 
-interface ApiResponse {
-  message: string;
+function Home() {
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) {
+    return (
+      <div className="app-container">
+        <div className="loading-state">
+          <div className="loading-text">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return (
+    <div className="app-container">
+      <div className="main-card-wrapper">
+        <img
+          src="https://cdn.auth0.com/quantum-assets/dist/latest/logos/auth0/auth0-lockup-en-ondark.png"
+          alt="Auth0 Logo"
+          className="auth0-logo"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        <h1 className="main-title">Welcome to Redeemer Recovery</h1>
+        <div className="action-card">
+          <p className="action-text">Get started by signing in to your account</p>
+          <LoginButton />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function App() {
-  const [message, setMessage] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
+  const { error } = useAuth0();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<ApiResponse>('/api');
-        setMessage(response.data.message);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setMessage('Failed to connect to server');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  if (error) {
+    return (
+      <div className="app-container">
+        <div className="error-state">
+          <div className="error-title">Oops!</div>
+          <div className="error-message">Something went wrong</div>
+          <div className="error-sub-message">{error.message}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="App">
-      <div className="cross-background"></div>
-      <header className="App-header">
-        <div className="logo-container">
-          <div className="cross-icon">✝</div>
-          <h1>Redeemer Recovery</h1>
-          <p className="subtitle">A Journey of Healing and Hope</p>
-        </div>
-
-        <div className="scripture-verse">
-          <p className="verse-text">"He heals the brokenhearted and binds up their wounds."</p>
-          <p className="verse-reference">- Psalm 147:3</p>
-        </div>
-
-        <div className="content-section">
-          {loading ? (
-            <p className="loading-text">Loading...</p>
-          ) : (
-            <div className="message-box">
-              <p>{message}</p>
-            </div>
-          )}
-        </div>
-
-        <div className="footer-section">
-          <p className="footer-text">Walking in faith, one step at a time</p>
-        </div>
-      </header>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

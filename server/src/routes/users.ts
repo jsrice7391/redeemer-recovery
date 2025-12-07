@@ -103,8 +103,8 @@ router.get('/:id', async (req: Request, res: Response) => {
  * @swagger
  * /api/users:
  *   post:
- *     summary: Create a new user
- *     description: Create a new user with a unique email address
+ *     summary: Create a new user or return existing
+ *     description: Create a new user with a unique email address. If a user with the email already exists, returns the existing user.
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -113,6 +113,12 @@ router.get('/:id', async (req: Request, res: Response) => {
  *           schema:
  *             $ref: '#/components/schemas/CreateUserDto'
  *     responses:
+ *       200:
+ *         description: Existing user found and returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       201:
  *         description: User created successfully
  *         content:
@@ -132,14 +138,6 @@ router.get('/:id', async (req: Request, res: Response) => {
  *               invalidEmail:
  *                 value:
  *                   error: 'Invalid email format'
- *       409:
- *         description: Email already exists
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error: 'Email already exists'
  *       500:
  *         description: Server error
  *         content:
@@ -150,22 +148,22 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const { name, email }: CreateUserDto = req.body;
-    
+
     // Validation
     if (!name || !email) {
       return res.status(400).json({ error: 'Name and email are required' });
     }
-    
+
     if (!email.includes('@')) {
       return res.status(400).json({ error: 'Invalid email format' });
     }
-    
+
     // Check if email already exists
     const existingUser = await userStore.getByEmail(email);
     if (existingUser) {
-      return res.status(409).json({ error: 'Email already exists' });
+      return res.status(200).json(existingUser);
     }
-    
+
     const newUser = await userStore.create(name, email);
     res.status(201).json(newUser);
   } catch (error) {
