@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { userApi, User as BackendUser, CreateUserDto } from './api/userApi';
-import LogoutButton from './LogoutButton';
+import { userApi, User as BackendUser, CreateUserDto } from '../api/userApi';
+import LogoutButton from '../comps/LogoutButton';
 
 const Dashboard = () => {
   const { user, isLoading: auth0Loading } = useAuth0();

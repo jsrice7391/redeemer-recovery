@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import LoginButton from './LoginButton';
-import Dashboard from './Dashboard';
+import LoginButton from './comps/LoginButton';
+import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
 
 function Home() {
