@@ -7,15 +7,76 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  email     String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  groups    UserGroup[]
+  step      UserStep?
 
   @@map("users")
+}
+
+model Facilitator {
+  id           Int      @id @default(autoincrement())
+  name         String
+  role         String   @default("Group Facilitator")
+  phone        String?
+  email        String?
+  availability String?
+  groups       Group[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("facilitators")
+}
+
+model Group {
+  id              Int          @id @default(autoincrement())
+  name            String
+  location        String
+  city            String
+  state           String
+  zipCode         String
+  meetingDay      String
+  meetingTime     String
+  focusArea       String
+  description     String       @db.Text
+  facilitatorName String       @map("facilitator")
+  address         String
+  facilitatorId   Int?
+  facilitator     Facilitator? @relation(fields: [facilitatorId], references: [id])
+  members         UserGroup[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("groups")
+}
+
+model UserGroup {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  groupId   Int
+  isPrimary Boolean  @default(false)
+  joinedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@map("user_groups")
+}
+
+model UserStep {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @unique
+  stepNumber Int      @default(1)
+  startedAt  DateTime @default(now())
+  note       String?  @db.Text
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_steps")
 }

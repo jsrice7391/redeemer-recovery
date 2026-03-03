@@ -9,7 +9,7 @@ npm install
 
 ## 2. Configure Database
 
-Update `server/.env` with your PostgreSQL connection string:
+Update `server/.env` with your PostgreSQL connection string (Prisma 7 reads this via `server/prisma.config.ts`):
 
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/redeemer_recovery?schema=public"

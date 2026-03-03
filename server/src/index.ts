@@ -2,7 +2,11 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/users';
+import groupRoutes from './routes/groups';
+import facilitatorRoutes from './routes/facilitators';
 import { setupSwagger } from './config/swagger';
+import morganMiddleware from './middleware/morganMiddleware';
+import logger from './config/logger';
 
 dotenv.config();
 
@@ -13,6 +17,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morganMiddleware);
 
 // Swagger Documentation
 setupSwagger(app);
@@ -62,8 +67,14 @@ app.get('/api/health', (req: Request, res: Response) => {
 // User routes
 app.use('/api/users', userRoutes);
 
+// Group routes
+app.use('/api/groups', groupRoutes);
+
+// Facilitator routes
+app.use('/api/facilitators', facilitatorRoutes);
+
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
+  logger.info(`Server is running on http://localhost:${PORT}`);
+  logger.info(`API Documentation available at http://localhost:${PORT}/api-docs`);
 });
